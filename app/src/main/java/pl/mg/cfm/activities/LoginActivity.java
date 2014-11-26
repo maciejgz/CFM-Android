@@ -1,4 +1,4 @@
-package pl.mg.cfm;
+package pl.mg.cfm.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import pl.mg.cfm.R;
 import pl.mg.cfm.message.CFMJsonSimpleMessage;
+import pl.mg.cfm.network.CFMUtilsDictionary;
 import pl.mg.cfm.network.HttpClientFactory;
 import pl.mg.cfm.pojo.CarPojo;
 import pl.mg.cfm.serializer.CFMMessageSerializer;
@@ -48,13 +51,7 @@ import pl.mg.cfm.serializer.CarSerializer;
  */
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+    private static final String TAG = LoginActivity.class.getCanonicalName();
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -75,7 +72,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
-
+        test();
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -98,6 +95,23 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+    private void test() {
+        CarPojo car = new CarPojo();
+        car.setCarId("carId");
+        car.setDistance(100L);
+        car.setLatitude(12.0);
+        car.setLongitude(12.0);
+        car.setOwnerId(1);
+        Log.d(TAG, car.toString());
+
+
+        CarSerializer serializer = new CarSerializer();
+
+        String toSerialize = "{\"carId\":\"wsc1234\",\"distance\":0,\"latitude\":-50.123456789,\"longitude\":50.123456789,\"ownerId\":9996}";
+        CarPojo car2 = serializer.deserialize(toSerialize);
+        Log.d(TAG, car2.toString());
     }
 
     private void populateAutoComplete() {
@@ -272,14 +286,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
-            //HttpClientFactory.loadCert(getApplicationContext());
             DefaultHttpClient client = null;
             try {
-                client = (DefaultHttpClient) HttpClientFactory.getHttpClient(getApplicationContext());
+                client = (DefaultHttpClient) HttpClientFactory.getHttpClient();
                 UsernamePasswordCredentials creds = new UsernamePasswordCredentials("9996", "testPass");
-                HttpGet get = new HttpGet("https://192.168.1.104:8444/cfm-web/car/");
+                HttpGet get = new HttpGet(CFMUtilsDictionary.SERVER_URL + "cfm-web/car/");
                 get.setHeader(BasicScheme.authenticate(creds, "UTF-8", false));
                 try {
                     org.apache.http.HttpResponse httpResponse = client.execute(get);
@@ -306,16 +318,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
             } finally {
             }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
             return true;
         }
 

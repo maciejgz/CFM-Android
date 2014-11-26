@@ -25,4 +25,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.+'
     compile files('src/main/assets/lib/commons-io-2.4.jar')
     compile files('src/main/assets/lib/cfm-commons-0.0.1.jar')
+    compile files('src/main/assets/lib/gson-2.3.jar')
 }

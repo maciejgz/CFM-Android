@@ -146,34 +146,11 @@ public class HttpClientFactory {
         }
     }
 
-
-    public static HttpClient getHttpClient(Context context) {
-       /* HttpClient client = null;
-
-
-        SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http",PlainSocketFactory.getSocketFactory(), 9080));
-
-        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-            }
-
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-            }
-
-        } };
-
-       *//* TrustStrategy trustStrategy = new TrustStrategy() {
-            @Override
-            public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                return true;
-            }
-        };*/
-
+    /**
+     * Funckja zwraca klienta http akceptującego wszystkie certyfikaty.
+     * @return
+     */
+    public static HttpClient getHttpClient() {
         try {
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             trustStore.load(null, null);
@@ -196,6 +173,5 @@ public class HttpClientFactory {
             return new DefaultHttpClient();
         }
 
-       /* return client;*/
     }
 }
