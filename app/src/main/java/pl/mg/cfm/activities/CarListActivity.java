@@ -1,58 +1,46 @@
 package pl.mg.cfm.activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import pl.mg.cfm.R;
 import pl.mg.cfm.account.UserAccountManager;
 
-
-public class MainActivity extends Activity {
-
-
-    private static final String TAG = MainActivity.class.getCanonicalName();
-
+public class CarListActivity extends Activity {
 
     private String id;
     private String password;
 
-    private TextView welcomeTextView;
-    private Button carListButton;
+    private TextView carListTitle;
+    private ListView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_car_list);
+
 
         this.id = getIntent().getStringExtra(UserAccountManager.LOGIN_INTENT_ID);
         this.password = getIntent().getStringExtra(UserAccountManager.PASSWORD_INTENT_ID);
 
-        initObjects();
+
+        initElements();
     }
 
-    private void initObjects() {
-        this.welcomeTextView = (TextView) findViewById(R.id.main_menu_text_view);
-        this.carListButton = (Button) findViewById(R.id.car_list_button);
+    private void initElements() {
 
-        this.carListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openCarListActivity();
-            }
-        });
+
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_car_list, menu);
         return true;
     }
 
@@ -71,11 +59,4 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    private void openCarListActivity() {
-        Intent carListActivityIntent = new Intent(this, CarListActivity.class);
-        carListActivityIntent.putExtra(UserAccountManager.LOGIN_INTENT_ID, this.id);
-        carListActivityIntent.putExtra(UserAccountManager.PASSWORD_INTENT_ID, this.password);
-        startActivity(carListActivityIntent);
-    }
 }

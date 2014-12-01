@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -38,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import pl.mg.cfm.R;
+import pl.mg.cfm.account.UserAccountManager;
 import pl.mg.cfm.message.CFMJsonSimpleMessage;
 import pl.mg.cfm.network.CFMUtilsDictionary;
 import pl.mg.cfm.network.HttpClientFactory;
@@ -276,11 +278,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mEmployeeId;
         private final String mPassword;
 
         UserLoginTask(String email, String password) {
-            mEmail = email;
+            mEmployeeId = email;
             mPassword = password;
         }
 
@@ -327,7 +329,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
-                finish();
+                openMenuActivity(mEmployeeId,mPassword);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -339,6 +341,17 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+
+    private void openMenuActivity(String employeeId, String mPassword) {
+        Log.d(TAG, "openMenuActivity");
+        Intent menuActivityIntent = new Intent(this, MainActivity.class);
+        menuActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        menuActivityIntent.putExtra(UserAccountManager.LOGIN_INTENT_ID,employeeId);
+        menuActivityIntent.putExtra(UserAccountManager.PASSWORD_INTENT_ID,mPassword);
+//        menuActivityIntent.putExtra(
+        startActivity(menuActivityIntent);
     }
 }
 
