@@ -35,7 +35,6 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import pl.mg.cfm.R;
@@ -44,14 +43,18 @@ import pl.mg.cfm.message.CFMJsonSimpleMessage;
 import pl.mg.cfm.network.CFMUtilsDictionary;
 import pl.mg.cfm.network.HttpClientFactory;
 import pl.mg.cfm.pojo.CarPojo;
+import pl.mg.cfm.pojo.EmployeePojo;
 import pl.mg.cfm.serializer.CFMMessageSerializer;
 import pl.mg.cfm.serializer.CarSerializer;
+import pl.mg.cfm.serializer.EmployeeSerializer;
 
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+
+    public static boolean MOCKUP = false;
 
     private static final String TAG = LoginActivity.class.getCanonicalName();
     /**
@@ -292,8 +295,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             DefaultHttpClient client = null;
             try {
                 client = (DefaultHttpClient) HttpClientFactory.getHttpClient();
-                UsernamePasswordCredentials creds = new UsernamePasswordCredentials("9996", "testPass");
-                HttpGet get = new HttpGet(CFMUtilsDictionary.SERVER_URL + "cfm-web/car/");
+                UsernamePasswordCredentials creds = new UsernamePasswordCredentials(mEmployeeId, mPassword);
+                HttpGet get = new HttpGet(CFMUtilsDictionary.SERVER_URL + "cfm-web/employee/" + mEmployeeId);
                 get.setHeader(BasicScheme.authenticate(creds, "UTF-8", false));
                 try {
                     org.apache.http.HttpResponse httpResponse = client.execute(get);
@@ -309,16 +312,19 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     System.out.println(message.toString());
 
 
-                    List<CarPojo> list = (new CarSerializer()).deserializeList(message.getData());
-                    Iterator<CarPojo> it = list.iterator();
-                    while (it.hasNext()) {
-                        System.out.println(it.next().toString());
+                    EmployeePojo employee = (new EmployeeSerializer()).deserialize(message.getData());
+
+                    if (employee.getId().equals(mEmployeeId)) {
+                        return true;
                     }
+
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return false;
                 }
             } finally {
+
             }
             return true;
         }
@@ -329,7 +335,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
-                openMenuActivity(mEmployeeId,mPassword);
+                openMenuActivity(mEmployeeId, mPassword);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -348,8 +354,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         Log.d(TAG, "openMenuActivity");
         Intent menuActivityIntent = new Intent(this, MainActivity.class);
         menuActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        menuActivityIntent.putExtra(UserAccountManager.LOGIN_INTENT_ID,employeeId);
-        menuActivityIntent.putExtra(UserAccountManager.PASSWORD_INTENT_ID,mPassword);
+        menuActivityIntent.putExtra(UserAccountManager.LOGIN_INTENT_ID, employeeId);
+        menuActivityIntent.putExtra(UserAccountManager.PASSWORD_INTENT_ID, mPassword);
 //        menuActivityIntent.putExtra(
         startActivity(menuActivityIntent);
     }

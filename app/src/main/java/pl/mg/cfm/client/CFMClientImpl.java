@@ -1,4 +1,4 @@
-package pl.mg.cfm.pl.mg.cfm.client;
+package pl.mg.cfm.client;
 
 import android.os.AsyncTask;
 
